@@ -30,3 +30,10 @@
 #list-item {
 	font-size: 16pt;
 }
+
+#dbutton {
+	background: #fff;
+	outline: none;
+	font-size: 16pt;
+	border: 0;
+}
