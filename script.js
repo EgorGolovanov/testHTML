@@ -53,8 +53,23 @@ document.querySelector('ul').addEventListener("click", function(e) {
 });
 
 document.addEventListener("click", function(e) {
-	if (e.target && (e.target.matches("input[name='sort-radiobutton']"))) {
-		sortList();
+	if (e.target && (e.target.matches("input[id='number-sort']"))) {
+		Sort(true, true);
+	}
+});
+document.addEventListener("click", function(e) {
+	if (e.target && (e.target.matches("input[id='rnumber-sort']"))) {
+		Sort(false, true);
+	}
+});
+document.addEventListener("click", function(e) {
+	if (e.target && (e.target.matches("input[id='alphabet-sort']"))) {
+		Sort(true, false);
+	}
+});
+document.addEventListener("click", function(e) {
+	if (e.target && (e.target.matches("input[id='ralphabet-sort']"))) {
+		Sort(false, false);
 	}
 });
 
@@ -75,45 +90,48 @@ function addToUl() {
 	}
 }
 
-function sortList() {
-	let list, i, switching, b, shouldSwitch, dir, switchcount = 0;
-	list = document.getElementById("list-item");
-	switching = true;
-	while (switching) {
-		switching = false;
-		li = list.getElementsByTagName("LI");
-		if (li.length == 0) return;
-		for (i = 0; i < (li.length - 1); i++) {
-			shouldSwitch = false;
-			if (document.getElementById("alphabet-sort").checked) {
-				if (li[i].children[1].text.toLowerCase() > li[i + 1].children[1].text.toLowerCase()) {
-					shouldSwitch = true;
-					break;
-				}
-			} else if (document.getElementById("ralphabet-sort").checked) {
-				if (li[i].children[1].text.toLowerCase() < li[i + 1].children[1].text.toLowerCase()) {
-					shouldSwitch= true;
-					break;
-				}
-			} else if (document.getElementById("number-sort").checked) {
-				if (Number(li[i].children[0].text) > Number(li[i + 1].children[0].text)) {
-					shouldSwitch = true;
-					break;
-				}
-			} else if (document.getElementById("rnumber-sort").checked) {
-				if (Number(li[i].children[0].text) < Number(li[i + 1].children[0].text)) {
-					shouldSwitch = true;
-					break;	
-				}
-			}
-		}
-	if (shouldSwitch) {
-		li[i].parentNode.insertBefore(li[i + 1], li[i]);
-		switching = true;
-		switchcount ++;
-    } else if (switchcount == 0) {
-			switching = true;
+function Sort(order, choose) {
+	let textList = new Array(), 
+	numberList = new Array(), 
+	newTextList = new Array(), 
+	newNumberList= new Array();
+	let list = li = document.getElementsByTagName("li");
+	
+	for (let i = 0; i < list.length; i++) {
+		textList.push(list[i].children[1].text.toLowerCase());
+		numberList.push(list[i].children[0].text);
 	}
+	
+	newTextList = textList.slice();
+	newNumberList = numberList.slice();
+	
+	if (!choose) {
+		textList.sort();
+		
+		if (!order) textList.reverse();
+		
+		for (let i = 0; i < newTextList.length; i++) {
+			let index = newTextList.indexOf(textList[i]);
+			newNumberList[i] = numberList[index];
+		}
+		
+		newTextList = textList;
+	} else {
+		numberList.sort();
+		
+		if (!order) numberList.reverse();
+		
+		for (let i = 0; i < newNumberList.length; i++) {
+			let index = newNumberList.indexOf(numberList[i]);
+			newTextList[i] = textList[index];
+		}
+		
+		newNumberList = numberList;
+	}
+	
+	for (let i = 0; i < list.length; i++) {
+		list[i].children[0].text = newNumberList[i];
+		list[i].children[1].text = newTextList[i];
 	}
 }
 
