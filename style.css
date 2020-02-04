@@ -31,9 +31,19 @@
 	font-size: 16pt;
 }
 
-#dbutton {
+#dbutton,
+#editbutton {
 	background: #fff;
 	outline: none;
 	font-size: 16pt;
 	border: 0;
+}
+
+#okbutton,
+#canselbutton {
+	background: #fff;
+	outline: none;
+	font-size: 16pt;
+	border: 0;
+	display: none;
 }
