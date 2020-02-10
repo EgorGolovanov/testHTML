@@ -67,28 +67,10 @@ document.querySelector('ul').addEventListener("click", function(e) {
 	li.children[1].style.display = "inline";
 });
 
-//слушатель для обработки событий при выборе сортировки списка 
+
 document.addEventListener("click", function(e) {
-	if (e.target && (e.target.matches("input[id='number-sort']"))) {
-		listSort(true, true);
-	}
-});
-//слушатель для обработки событий при выборе сортировки списка
-document.addEventListener("click", function(e) {
-	if (e.target && (e.target.matches("input[id='rnumber-sort']"))) {
-		listSort(false, true);
-	}
-});
-//слушатель для обработки событий при выборе сортировки списка
-document.addEventListener("click", function(e) {
-	if (e.target && (e.target.matches("input[id='alphabet-sort']"))) {
-		listSort(true, false);
-	}
-});
-//слушатель для обработки событий при выборе сортировки списка
-document.addEventListener("click", function(e) {
-	if (e.target && (e.target.matches("input[id='ralphabet-sort']"))) {
-		listSort(false, false);
+	if (e.target && e.target.matches("input[name='sort-radiobutton']")) {
+		Sorting(e.target);
 	}
 });
 
@@ -101,59 +83,69 @@ function addToUl() {
 	
 	//при пустом значении текста не добавляем в список
 	if (text.value != "") {
-		let number = "<a>" + (ul.children.length + 1) + "</a>"
-		let value = "<a>" + text.value + "</a>";
+		let number = "<a class= id>" + (ul.children.length + 1) + "</a>"
+		let value = "<a class= value>" + text.value + "</a>";
 		li.innerHTML = number + value + blockOfButtons;
 		ul.append(li);
 		text.value = "";
 	}
 }
 
-//функция для сортировки списка
-function listSort(order, choose) {
-	let textList = [], numberList = [], index;
-	let list = li = document.getElementsByTagName("li");
-	
-	//создание временных массивов для сортировки 
-	for (let i = 0; i < list.length; i++) {
-		textList.push(list[i].children[1].text.toLowerCase());
-		numberList.push(list[i].children[0].text);
-	}
-	
-	let newTextList = textList.slice();
-	let newNumberList = numberList.slice();
-	
-	//сортировка в зависимости от входных параметров
-	if (!choose) {
-		textList.sort();
-		
-		if (!order) textList.reverse();
-		
-		//относительно сортировки по алфавиту меняем числовой массив
-		for (let i = 0; i < newTextList.length; i++) {
-			index = newTextList.indexOf(textList[i]);
-			newNumberList[i] = numberList[index];
-		}
-		
-		newTextList = textList;
-	} else {
-		numberList.sort();
-		
-		if (!order) numberList.reverse();
-		
-		//относительно сортировки по числам меняем текстовый массив
-		for (let i = 0; i < newNumberList.length; i++) {
-			index = newNumberList.indexOf(numberList[i]);
-			newTextList[i] = textList[index];
-		}
-		
-		newNumberList = numberList;
-	}
-	
-	//перезапись отсортированных массивов в исходный список
-	for (let i = 0; i < list.length; i++) {
-		list[i].children[0].text = newNumberList[i];
-		list[i].children[1].text = newTextList[i];
-	}
+//функция для сортировки ul списка, где fields - входное условие для выбора сортировки
+function Sorting(fields) {
+    let listUl = document.getElementById('list-item');
+    let parent = listUl.parentNode;
+    //let newList = (fields.value.indexOf('number') == -1) ? textSort(fields) : numberSort(fields);
+    let newList = Sort(fields); 
+    let rr = 0;
+
+    parent.insertBefore(newList, listUl);
+    parent.removeChild(listUl);
+    
+    newList.id = 'list-item';
 }
+
+//функция создания ul по входному массиву
+function makeUl(array) {
+    let list = document.createElement('ul'); 
+
+    for (let i = 0; i < array.length; i++) {
+
+        list.appendChild(array[i]);
+    }
+
+    return list;
+}
+
+//функция сортировки массива по id
+function Sort(fields) {
+    var nodeList = document.querySelectorAll('li');
+    var itemsArray = [];
+
+    for (var i = 0; i < nodeList.length; i++) {    
+        itemsArray.push(nodeList[i]);
+    }
+
+    itemsArray.sort(function(nodeA, nodeB) {
+        //выбор нужнго поля для сортировки
+        let textA = nodeA.querySelector('.' + fields.value).text;
+        let textB = nodeB.querySelector('.' + fields.value).text;
+        //проверка числовая или текстовая сортировка
+        let A = parseInt(textA);
+        let B = parseInt(textB);
+        
+        if (!A) A = textA;        
+        if (!B) B = textB;
+        
+        if (A < B) return -1;
+        if (A > B) return 1;
+
+        return 0;
+    });
+
+    if (fields.className.indexOf('asc') == -1) itemsArray.reverse();
+    
+    return makeUl(itemsArray);
+}
+
 
